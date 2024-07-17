@@ -9,8 +9,10 @@ npm install
 ```bash
 # Run nodejs app
 npm start
+
 # Run development server
 npm run server
+
 # Run tests
 npm test
 ```
