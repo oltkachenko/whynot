@@ -1,4 +1,5 @@
 import CommissionCalculator from './CommissionCalculator.js';
+import messages from "./messages/en.js";
 
 // Get the input file path from command line arguments
 const inputFile = process.argv[2];
@@ -10,5 +11,5 @@ const calculator = new CommissionCalculator(inputFile);
 calculator.init().then(() => {
     calculator.calculateCommissionFees();
 }).catch(error => {
-    console.error('Failed to initialize and calculate commissions:', error.message);
+    console.error(messages.appInit.error, error.message);
 });
