@@ -1,6 +1,12 @@
 import fs from 'fs'
 import moment from 'moment'
+import messages from "./messages/en.js";
 import { getCashInCommissionFee, getCashOutLegalCommissionFee, getCashOutNaturalCommissionFee } from './api/commissionData.js';
+
+const CASH_IN = "cash_in";
+const CASH_OUT = "cash_out";
+const JURIDICAL_USER = "juridical";
+const NATURAL_USER = "natural"
 
 /**
      * @class CommissionCalculator
@@ -38,7 +44,7 @@ class CommissionCalculator {
 
             this.getInputData();
         } catch (error) {
-            console.error('Error getting commission fees');
+            console.error(messages.commissionCalculatorInit.error);
             throw error;
         }
     }
@@ -52,7 +58,7 @@ class CommissionCalculator {
         try {
             this.inputData = JSON.parse(fs.readFileSync(this.inputFile, 'utf8'));
         } catch (error) {
-            console.error('Input file is not valid');
+            console.error(messages.inputData.error);
             throw error;
         }
     }
@@ -124,15 +130,15 @@ class CommissionCalculator {
         this.inputData.map(operation => {
             let commision = 0;
         
-            if (operation.type === 'cash_in') {
+            if (operation.type === CASH_IN) {
                 commision = this.calculateCashInCommission(operation.operation.amount)
             }
         
-            if (operation.type === 'cash_out' && operation.user_type === 'juridical') {
+            if (operation.type === CASH_OUT && operation.user_type === JURIDICAL_USER) {
                 commision = this.calculateLegalCashOutCommission(operation.operation.amount);
             }
         
-            if (operation.type === 'cash_out' && operation.user_type === 'natural') {
+            if (operation.type === CASH_OUT && operation.user_type === NATURAL_USER) {
                 commision = this.calculateNaturalCashOutCommission(operation);
             }
             

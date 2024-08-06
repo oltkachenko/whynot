@@ -1,15 +1,17 @@
 import { expect } from 'chai';
 import CommissionCalculator from '../CommissionCalculator.js';
-
-const inputFile = './input.json';
+import { inputDataMock } from './testData/inputData.js'
+import { cashInCommissionFeeMock, cashOutLegalCommissionFeeMock, cashOutNaturalCommissionFeeMock } from './testData/commissionFee.js'
 
 describe('CommissionCalculator', function() {
     let calculator;
 
-    beforeEach(async function() {
-        calculator = new CommissionCalculator(inputFile);
-
-        await calculator.init();
+    beforeEach(function() {
+        calculator = new CommissionCalculator(inputDataMock);
+        calculator.inputData = inputDataMock;
+        calculator.cashInCommissionFee = cashInCommissionFeeMock;
+        calculator.cashOutLegalCommissionFee = cashOutLegalCommissionFeeMock;
+        calculator.cashOutNaturalCommissionFee = cashOutNaturalCommissionFeeMock;
     });
 
     it('should calculate cashIn commission', function() {
@@ -30,12 +32,24 @@ describe('CommissionCalculator', function() {
 
         const commission1 = calculator.calculateNaturalCashOutCommission(operation1);
         const commission2 = calculator.calculateNaturalCashOutCommission(operation2);
-        expect(commission1).to.be.closeTo(87.00, 2);
-        expect(commission2).to.be.closeTo(3.00, 2);
+        expect(commission1).to.equal(87.00, 2);
+        expect(commission2).to.equal(3.00, 2);
     });
 
     it('should calculate commission fees for all operations', function() {
-        const consoleSpy = console.log = () => {};
+        const consoleSpy = [];
+        const originalConsoleLog = console.log;
+
+        console.log = (msg) => consoleSpy.push(msg);
+
         calculator.calculateCommissionFees();
+
+        expect(consoleSpy).to.include('0.06');
+        expect(consoleSpy).to.include('0.90');
+        expect(consoleSpy).to.include('87.00');
+        expect(consoleSpy).to.include('5.00');
+
+        // Restore original console.log
+        console.log = originalConsoleLog;
     });
 });
